@@ -10,6 +10,7 @@ A more "consistent version" of [flutter-manifest-creato](https://github.com/brut
 # Goals
 
 [x] Create flutter project
+
 [x] Create basic manifest generator
 
 
