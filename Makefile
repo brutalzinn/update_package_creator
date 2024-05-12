@@ -3,7 +3,7 @@
 FLUTTER = flutter
 
 .PHONY: all build clean
-''
+
 all: build
 
 build: build_windows build_mac build_linux

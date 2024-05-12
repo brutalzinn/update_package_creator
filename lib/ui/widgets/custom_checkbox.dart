@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:update_package_creator/core/ui/controllers/checkbox_controller.dart';
+import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
 
 class CustomCheckbox extends StatelessWidget {
   final String label;

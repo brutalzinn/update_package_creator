@@ -8,11 +8,11 @@ import 'package:update_package_creator/core/models/config.dart';
 import 'package:update_package_creator/core/models/manifest.dart';
 import 'package:update_package_creator/core/models/update_info.dart';
 import 'package:path/path.dart' as p;
-import 'package:update_package_creator/core/ui/controllers/checkbox_controller.dart';
-import 'package:update_package_creator/core/ui/dialogs/dialogs.dart';
-import 'package:update_package_creator/core/ui/views/config.dart';
-import 'package:update_package_creator/core/ui/widgets/custom_checkbox.dart';
-import 'package:update_package_creator/core/ui/widgets/custom_input_text.dart';
+import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
+import 'package:update_package_creator/ui/dialogs/dialogs.dart';
+import 'package:update_package_creator/ui/views/config.dart';
+import 'package:update_package_creator/ui/widgets/custom_checkbox.dart';
+import 'package:update_package_creator/ui/widgets/custom_input_text.dart';
 import 'package:update_package_creator/core/util.dart';
 
 class ManifestEditor extends StatefulWidget {
