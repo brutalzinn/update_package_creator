@@ -6,17 +6,17 @@ FLUTTER = flutter
 
 all: build
 
-build: build_windows build_mac build_linux
+build: build-windows build-mac build-linux
 
-build_windows:
+build-windows:
 	@echo "Building Windows executable..."
 	@$(FLUTTER) build windows
 
-build_mac:
+build-mac:
 	@echo "Building Mac executable..."
 	@$(FLUTTER) build macos
 
-build_linux:
+build-linux:
 	@echo "Building Linux executable..."
 	@$(FLUTTER) build linux
 
