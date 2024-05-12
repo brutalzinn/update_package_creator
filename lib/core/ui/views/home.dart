@@ -1,12 +1,17 @@
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:update_package_creator/core/config_manager.dart';
+import 'package:update_package_creator/core/models/config.dart';
 import 'package:update_package_creator/core/models/manifest.dart';
 import 'package:update_package_creator/core/models/update_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/core/ui/controllers/checkbox_controller.dart';
+import 'package:update_package_creator/core/ui/dialogs/dialogs.dart';
 import 'package:update_package_creator/core/ui/views/config.dart';
+import 'package:update_package_creator/core/ui/views/manifest.dart';
 import 'package:update_package_creator/core/ui/widgets/custom_checkbox.dart';
 import 'package:update_package_creator/core/ui/widgets/custom_input_text.dart';
 import 'package:update_package_creator/core/util.dart';
@@ -17,15 +22,25 @@ class Home extends StatefulWidget {
 }
 
 class _HomePageState extends State<Home> {
+  String manifestFile = "";
+  String baseUrl = "";
+  String versionFile = "";
   String _sourceDirectory = 'test//input';
   String _outputDirectory = 'test//output';
   TextEditingController versionTextController = TextEditingController();
-  CheckboxController checkboxController = CheckboxController();
+  CheckboxController isAutoIncrementController = CheckboxController();
+  late ConfigModel config;
 
+  @override
   void initState() {
     super.initState();
-    checkboxController.addListener(() {
-      setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      config = await ConfigManager.loadConfig();
+      versionTextController.text = await Util.readVersion(versionFile);
+      isAutoIncrementController.isChecked.value = config.isAutoIncrement;
+      baseUrl = config.url;
+      manifestFile = Util.getManifestFile(config);
+      versionFile = Util.getVersionFile(config);
     });
   }
 
@@ -54,43 +69,40 @@ class _HomePageState extends State<Home> {
     );
   }
 
+  void _openManifest() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ManifestEditor()),
+    );
+  }
+
   void _generateUpdatePackage() async {
     try {
-      String manifestFile = 'manifest.json';
-      String baseUrl = 'https://example.com/updates/';
-      String versionFile = 'version.txt';
-      String newVersion = await Util.readAndIncrementVersion(versionFile);
+      String newVersion = versionTextController.text;
+      if (isAutoIncrementController.isChecked.value) {
+        newVersion = await Util.readAndIncrementVersion(versionFile);
+      }
       String outputZipFile =
           p.join(_outputDirectory, "update_package_v$newVersion.zip");
-
       await Util.createUpdatePackage(_sourceDirectory, outputZipFile);
-
-      Manifest manifest = await Util.readManifestFile(manifestFile);
-      manifest.addUpdate(UpdateInfo(
-          version: newVersion,
-          url: '$baseUrl/update_package_v$newVersion.zip'));
+      Manifest manifest = Manifest(updates: []);
+      if (config.isSmartManifest) {
+        manifest = await Util.readManifestFile(manifestFile);
+        manifest.addUpdate(UpdateInfo(
+            version: newVersion,
+            url: '$baseUrl/update_package_v$newVersion.zip'));
+      }
       await Util.writeManifestFile(manifestFile, manifest);
-      print('Update package created: $outputZipFile');
     } catch (e) {
-      print('An error occurred: $e');
+      /// todo: add internalization support to keep messages consistence
+      Dialogs.showSimpleAlert(context, "Error",
+          message:
+              "Ring around the rosies... something is broken and the fault is mine...");
     }
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Success'),
-        content: Text(
-            'Update package would be generated from:\n$_sourceDirectory\nto:\n$_outputDirectory'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-          ),
-        ],
-      ),
-    );
+    Dialogs.showSimpleAlert(context, "Sucess",
+        message:
+            " 'Update package would be generated from:\n$_sourceDirectory\nto:\n$_outputDirectory'");
   }
 
   @override
@@ -99,14 +111,15 @@ class _HomePageState extends State<Home> {
       appBar: AppBar(
         title: Text('Update Package Creator'),
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           Row(
             children: [
               CustomInputText(
                   label: "Version", controller: versionTextController),
               CustomCheckbox(
-                  label: "Auto increment", controller: checkboxController)
+                  label: "Auto increment",
+                  controller: isAutoIncrementController),
             ],
           ),
           ElevatedButton(
@@ -124,6 +137,11 @@ class _HomePageState extends State<Home> {
           ElevatedButton(
             onPressed: _generateUpdatePackage,
             child: Text('Generate Update Package'),
+          ),
+          SizedBox(height: 200),
+          ElevatedButton(
+            onPressed: _openManifest,
+            child: Text('Manifest editor'),
           ),
           SizedBox(height: 40),
           ElevatedButton(

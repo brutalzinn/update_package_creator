@@ -1,18 +1,24 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:update_package_creator/core/models/manifest.dart';
-import 'package:update_package_creator/core/models/update_info.dart';
-import 'package:path/path.dart' as p;
-import 'package:update_package_creator/core/ui/controllers/checkbox_controller.dart';
 import 'package:update_package_creator/core/ui/views/home.dart';
-import 'package:update_package_creator/core/ui/widgets/custom_checkbox.dart';
-import 'package:update_package_creator/core/ui/widgets/custom_input_text.dart';
+import 'package:window_manager/window_manager.dart';
 
-import 'core/util.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
 
-void main() {
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(800, 700),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.hidden,
+    windowButtonVisibility: false,
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+
   runApp(MyApp());
 }
 

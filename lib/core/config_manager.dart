@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:update_package_creator/core/models/config.dart';
 
@@ -12,7 +11,8 @@ class ConfigManager {
     } catch (e) {
       return ConfigModel(
         url: "http://robertocpaes.dev/test",
-        manifestPath: "manifest.json",
+        manifestDirPath: "test\\output",
+        versionDirPath: "",
         isSmartManifest: true,
         isAutoIncrement: true,
       );

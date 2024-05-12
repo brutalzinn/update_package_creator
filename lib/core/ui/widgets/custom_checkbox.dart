@@ -19,10 +19,14 @@ class CustomCheckbox extends StatelessWidget {
       ),
       SizedBox(
         width: 150,
-        child: Checkbox(
-          value: controller.isChecked,
-          onChanged: controller.onChanged,
-        ),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: controller.isChecked,
+          builder: (context, value, _) {
+          return Checkbox(
+            value: controller.isChecked.value,
+            onChanged: controller.onChanged,
+          );
+        }),
       ),
     ]);
   }

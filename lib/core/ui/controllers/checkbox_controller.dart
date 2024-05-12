@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CheckboxController extends ChangeNotifier {
-  bool isChecked = false;
-
-  void toggle() {
-    isChecked = !isChecked;
-    notifyListeners();
-  }
+class CheckboxController with ChangeNotifier {
+  ValueNotifier<bool> isChecked = ValueNotifier<bool>(false);
 
   void onChanged(bool? checked) {
-    isChecked = checked!;
+    isChecked.value = checked!;
     notifyListeners();
   }
 }
