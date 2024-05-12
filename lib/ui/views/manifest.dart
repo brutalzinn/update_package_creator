@@ -83,7 +83,25 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
               updates[index].url = text;
               refresh();
             },
-          )
+          ),
+          DataCell(IconButton(
+              icon: Icon(
+                Icons.delete,
+                color: Colors.black.withOpacity(0.5),
+                size: 18,
+              ),
+              onPressed: () async {
+                final result = await showOkCancelAlertDialog(
+                    context: context,
+                    title: "Delete",
+                    message: "Are you sure you want to delete this item?",
+                    okLabel: "Yes",
+                    cancelLabel: "No");
+                if (result == OkCancelResult.ok) {
+                  updates.remove(item);
+                }
+                refresh();
+              }))
         ]),
       );
     }
@@ -94,7 +112,7 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manifest editorr'),
+        title: const Text('Manifest editor'),
       ),
       body: ListView(
         children: <Widget>[
@@ -111,7 +129,8 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
                 refresh();
               },
             ),
-            const DataColumn(label: const Text("Url")),
+            const DataColumn(label: Text("Url")),
+            const DataColumn(label: Text("Actions")),
           ], rows: cells),
           ElevatedButton(
               onPressed: () async {

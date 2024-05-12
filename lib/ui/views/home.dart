@@ -93,23 +93,22 @@ class _HomePageState extends State<Home> {
             url: '$baseUrl/update_package_v$newVersion.zip'));
       }
       await Util.writeManifestFile(manifestFile, manifest);
+      Dialogs.showSimpleAlert(context, "Sucess",
+          message:
+              " 'Update package would be generated from:\n$_sourceDirectory\nto:\n$_outputDirectory'");
     } catch (e) {
       /// todo: add internalization support to keep messages consistence
       Dialogs.showSimpleAlert(context, "Error",
           message:
               "Ring around the rosies... something is broken and the fault is mine...");
     }
-
-    Dialogs.showSimpleAlert(context, "Sucess",
-        message:
-            " 'Update package would be generated from:\n$_sourceDirectory\nto:\n$_outputDirectory'");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update Package Creator'),
+        title: const Text('Update Package Creator'),
       ),
       body: ListView(
         children: <Widget>[
@@ -124,29 +123,29 @@ class _HomePageState extends State<Home> {
           ),
           ElevatedButton(
             onPressed: _pickSourceDirectory,
-            child: Text('Select Source Directory'),
+            child: const Text('Select Source Directory'),
           ),
           Text('Selected: $_sourceDirectory'),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _pickOutputDirectory,
-            child: Text('Select Output Directory'),
+            child: const Text('Select Output Directory'),
           ),
           Text('Selected: $_outputDirectory'),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           ElevatedButton(
             onPressed: _generateUpdatePackage,
-            child: Text('Generate Update Package'),
+            child: const Text('Generate Update Package'),
           ),
-          SizedBox(height: 200),
+          const SizedBox(height: 200),
           ElevatedButton(
             onPressed: _openManifest,
-            child: Text('Manifest editor'),
+            child: const Text('Manifest editor'),
           ),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           ElevatedButton(
             onPressed: _openSettings,
-            child: Text('Settings'),
+            child: const Text('Settings'),
           ),
         ],
       ),
