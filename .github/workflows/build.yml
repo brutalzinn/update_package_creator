@@ -1,7 +1,8 @@
 name: Flutter CI
 
-on: push
-
+on:
+  release:
+    types: [created]
 jobs:
   build-and-release-windows:
     runs-on: windows-latest
