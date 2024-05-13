@@ -56,14 +56,15 @@ class _ConfigPageState extends State<Config> {
       ),
       body: Column(
         children: <Widget>[
-          CustomInputText(label: "Url host", controller: urlHostTextController),
+          CustomInputTextWidget(
+              label: "Url host", controller: urlHostTextController),
           ElevatedButton(
             onPressed: _pickManifestDirectory,
             child: const Text('Select Output Manifest Directory'),
           ),
-          CustomCheckbox(
+          CustomCheckBoxWidget(
               label: "Auto increment", controller: isAutoIncrementController),
-          CustomCheckbox(
+          CustomCheckBoxWidget(
               label: "Smart manifest", controller: isSmartManifestController),
           ElevatedButton(
               onPressed: () async {

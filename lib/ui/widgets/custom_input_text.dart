@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CustomInputText extends StatelessWidget {
+class CustomInputTextWidget extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
-  const CustomInputText({
+  const CustomInputTextWidget({
     Key? key,
     required this.label,
     required this.controller,

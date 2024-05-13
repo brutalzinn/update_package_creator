@@ -66,11 +66,11 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
             },
           ),
           DataCell(
-            Text(item.url),
+            Text(item.os.url),
             onTap: () async {
               final text = await Dialogs.showSimpleTextInput(
                   context, "Edit url",
-                  initialText: item.url);
+                  initialText: item.os.url);
               if (text == null) {
                 await showOkAlertDialog(
                   context: context,
@@ -80,7 +80,26 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
                 return;
               }
               final index = updates.indexOf(item);
-              updates[index].url = text;
+              updates[index].os.url = text;
+              refresh();
+            },
+          ),
+          DataCell(
+            Text(item.os.name),
+            onTap: () async {
+              final text = await Dialogs.showSimpleTextInput(
+                  context, "Edit OS name",
+                  initialText: item.os.name);
+              if (text == null) {
+                await showOkAlertDialog(
+                  context: context,
+                  title: "Warning",
+                  message: "wrong os name",
+                );
+                return;
+              }
+              final index = updates.indexOf(item);
+              updates[index].os.url = text;
               refresh();
             },
           ),
@@ -130,6 +149,7 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
               },
             ),
             const DataColumn(label: Text("Url")),
+            const DataColumn(label: Text("OS")),
             const DataColumn(label: Text("Actions")),
           ], rows: cells),
           ElevatedButton(

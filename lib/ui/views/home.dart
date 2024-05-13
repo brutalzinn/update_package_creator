@@ -9,7 +9,9 @@ import 'package:update_package_creator/core/models/manifest.dart';
 import 'package:update_package_creator/core/models/update_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
+import 'package:update_package_creator/ui/controllers/system_tabs_controller.dart';
 import 'package:update_package_creator/ui/dialogs/dialogs.dart';
+import 'package:update_package_creator/ui/tabs/system.dart';
 import 'package:update_package_creator/ui/views/config.dart';
 import 'package:update_package_creator/ui/views/manifest.dart';
 import 'package:update_package_creator/ui/widgets/custom_checkbox.dart';
@@ -29,6 +31,10 @@ class _HomePageState extends State<Home> {
   String _outputDirectory = 'test//output';
   TextEditingController versionTextController = TextEditingController();
   CheckboxController isAutoIncrementController = CheckboxController();
+  SystemTabsController windowsTabController = SystemTabsController();
+  SystemTabsController macTabController = SystemTabsController();
+  SystemTabsController linuxTabController = SystemTabsController();
+
   late ConfigModel config;
 
   @override
@@ -88,9 +94,9 @@ class _HomePageState extends State<Home> {
       Manifest manifest = Manifest(updates: []);
       if (config.isSmartManifest) {
         manifest = await Util.readManifestFile(manifestFile);
-        manifest.addUpdate(UpdateInfo(
-            version: newVersion,
-            url: '$baseUrl/update_package_v$newVersion.zip'));
+        // manifest.addUpdate(UpdateInfo(
+        //     version: newVersion,
+        //     url: '$baseUrl/update_package_v$newVersion.zip'));
       }
       await Util.writeManifestFile(manifestFile, manifest);
       Dialogs.showSimpleAlert(context, "Sucess",
@@ -110,44 +116,60 @@ class _HomePageState extends State<Home> {
       appBar: AppBar(
         title: const Text('Update Package Creator'),
       ),
-      body: ListView(
-        children: <Widget>[
-          Row(
-            children: [
-              CustomInputText(
-                  label: "Version", controller: versionTextController),
-              CustomCheckbox(
-                  label: "Auto increment",
-                  controller: isAutoIncrementController),
-            ],
-          ),
-          ElevatedButton(
-            onPressed: _pickSourceDirectory,
-            child: const Text('Select Source Directory'),
-          ),
-          Text('Selected: $_sourceDirectory'),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _pickOutputDirectory,
-            child: const Text('Select Output Directory'),
-          ),
-          Text('Selected: $_outputDirectory'),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: _generateUpdatePackage,
-            child: const Text('Generate Update Package'),
-          ),
-          const SizedBox(height: 200),
-          ElevatedButton(
-            onPressed: _openManifest,
-            child: const Text('Manifest editor'),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: _openSettings,
-            child: const Text('Settings'),
-          ),
-        ],
+      body: DefaultTabController(
+        length: 3,
+        child: ListView(
+          children: <Widget>[
+            Row(
+              children: [
+                CustomInputTextWidget(
+                    label: "Version", controller: versionTextController),
+                CustomCheckBoxWidget(
+                    label: "Auto increment",
+                    controller: isAutoIncrementController),
+              ],
+            ),
+            const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.window), child: Text("Windows")),
+                Tab(icon: Icon(Icons.apple), child: Text("Mac OS")),
+                Tab(
+                    icon: Icon(Icons.admin_panel_settings_outlined),
+                    child: Text("Linux")),
+              ],
+            ),
+            SizedBox(
+              width: 300,
+              height: 700,
+              child: TabBarView(children: [
+                Center(
+                    child: SystemTab(
+                  controller: windowsTabController,
+                )),
+                Center(
+                    child: SystemTab(
+                  controller: linuxTabController,
+                )),
+                Center(child: SystemTab(controller: macTabController)),
+              ]),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: _generateUpdatePackage,
+              child: const Text('Generate Update Package'),
+            ),
+            // const SizedBox(height: 200),
+            ElevatedButton(
+              onPressed: _openManifest,
+              child: const Text('Manifest editor'),
+            ),
+            // const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: _openSettings,
+              child: const Text('Settings'),
+            ),
+          ],
+        ),
       ),
     );
   }

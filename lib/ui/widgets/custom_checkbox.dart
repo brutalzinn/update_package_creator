@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
 
-class CustomCheckbox extends StatelessWidget {
+class CustomCheckBoxWidget extends StatelessWidget {
   final String label;
   final CheckboxController controller;
-  const CustomCheckbox({
+  const CustomCheckBoxWidget({
     Key? key,
     required this.label,
     required this.controller,
@@ -20,13 +20,13 @@ class CustomCheckbox extends StatelessWidget {
       SizedBox(
         width: 150,
         child: ValueListenableBuilder<bool>(
-          valueListenable: controller.isChecked,
-          builder: (context, value, _) {
-          return Checkbox(
-            value: controller.isChecked.value,
-            onChanged: controller.onChanged,
-          );
-        }),
+            valueListenable: controller.isChecked,
+            builder: (context, value, _) {
+              return Checkbox(
+                value: controller.isChecked.value,
+                onChanged: controller.onChanged,
+              );
+            }),
       ),
     ]);
   }
