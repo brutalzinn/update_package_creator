@@ -36,6 +36,18 @@ class Util {
     return result;
   }
 
+  static String incrementVersion(String currentVersion) {
+    if (isValidVersion(currentVersion) == false) {
+      throw Exception(
+          "Version format is incorrect. Expected format 'major.minor.patch'");
+    }
+    List<String> parts = currentVersion.split('.');
+    int patchVersion = int.parse(parts[2]);
+    patchVersion += 1; // Increment patch number
+    String newVersion = "${parts[0]}.${parts[1]}.$patchVersion";
+    return newVersion;
+  }
+
   static Future<String> readAndIncrementVersion(String versionFilePath) async {
     File versionFile = File(versionFilePath);
     if (!await versionFile.exists()) {

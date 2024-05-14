@@ -4,21 +4,26 @@ import 'dart:convert';
 class OsInfo {
   String name;
   String url;
-  Map<String, dynamic> metadata;
+  Map<String, dynamic>? metadata;
 
   OsInfo(this.name, this.url, this.metadata);
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'os': name,
+      'name': name,
       'url': url,
       'metadata': metadata,
     };
   }
 
   factory OsInfo.fromMap(Map<String, dynamic> map) {
-    return OsInfo(map['name'] as String, map['url'] as String,
-        Map<String, dynamic>.from((map['metadata'] as Map<String, dynamic>)));
+    return OsInfo(
+      map['name'] as String,
+      map['url'] as String,
+      map['metadata'] != null
+          ? Map<String, dynamic>.from(map['metadata'] as Map<String, dynamic>)
+          : null,
+    );
   }
 
   String toJson() => json.encode(toMap());
@@ -29,8 +34,8 @@ class OsInfo {
 
 class UpdateInfo {
   String version;
-  OsInfo os;
-  Map<String, dynamic> metadata;
+  List<OsInfo> os;
+  Map<String, dynamic>? metadata;
 
   UpdateInfo({
     required this.version,
@@ -41,18 +46,23 @@ class UpdateInfo {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'version': version,
-      'os': os.toMap(),
+      'os': os.map((x) => x.toMap()).toList(),
       'metadata': metadata,
     };
   }
 
   factory UpdateInfo.fromMap(Map<String, dynamic> map) {
     return UpdateInfo(
-        version: map['version'] as String,
-        os: OsInfo.fromMap(map['os'] as Map<String, dynamic>),
-        metadata: Map<String, dynamic>.from(
-          (map['metadata'] as Map<String, dynamic>),
-        ));
+      version: map['version'] as String,
+      os: List<OsInfo>.from(
+        (map['os'] as List).map<OsInfo>(
+          (x) => OsInfo.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+      metadata: map['metadata'] != null
+          ? Map<String, dynamic>.from(map['metadata'] as Map<String, dynamic>)
+          : null,
+    );
   }
 
   String toJson() => json.encode(toMap());

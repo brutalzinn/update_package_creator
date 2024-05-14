@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:update_package_creator/ui/controllers/metadata_controller.dart';
+import 'package:update_package_creator/ui/widgets/custom_input_text.dart';
 
 class CustomMetadataWidget extends StatefulWidget {
   final MetadataController controller;
@@ -14,8 +15,6 @@ class CustomMetadataWidget extends StatefulWidget {
 class _CustomMetadataWidgetState extends State<CustomMetadataWidget> {
   final TextEditingController _keyController = TextEditingController();
   final TextEditingController _valueController = TextEditingController();
-  GlobalKey<_CustomMetadataWidgetState> _myKey =
-      GlobalKey(); // We declare a key here
 
   void _addOrUpdateMetadata() {
     String key = _keyController.text;
@@ -36,37 +35,18 @@ class _CustomMetadataWidgetState extends State<CustomMetadataWidget> {
     return Column(
       children: <Widget>[
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 250,
-              child: TextField(
-                  controller: _keyController,
-                  decoration: const InputDecoration(
-                    labelText: 'Key',
-                    border: OutlineInputBorder(),
-                  )),
-            ),
-            SizedBox(
-              width: 250,
-              child: TextField(
-                controller: _valueController,
-                decoration: const InputDecoration(
-                  labelText: 'Value',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
+            CustomInputTextWidget(label: "key", controller: _keyController),
+            CustomInputTextWidget(label: "value", controller: _valueController),
             ElevatedButton(
               onPressed: _addOrUpdateMetadata,
               child: const Text('Add/Update Metadata'),
             ),
           ],
         ),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: 35.0,
-            maxHeight: 160.0,
-          ),
+        Container(
+          color: Colors.black12,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: widget.controller.metadata.value.length,

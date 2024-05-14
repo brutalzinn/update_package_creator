@@ -4,11 +4,10 @@ import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
 class CustomCheckBoxWidget extends StatelessWidget {
   final String label;
   final CheckboxController controller;
-  const CustomCheckBoxWidget({
-    Key? key,
-    required this.label,
-    required this.controller,
-  }) : super(key: key);
+  final Function(bool?)? onChanged;
+  const CustomCheckBoxWidget(
+      {Key? key, required this.label, required this.controller, this.onChanged})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,12 @@ class CustomCheckBoxWidget extends StatelessWidget {
             builder: (context, value, _) {
               return Checkbox(
                 value: controller.isChecked.value,
-                onChanged: controller.onChanged,
+                onChanged: (value) {
+                  controller.onChanged(value);
+                  if (onChanged != null) {
+                    onChanged!(value);
+                  }
+                },
               );
             }),
       ),

@@ -4,12 +4,13 @@ class CustomInputTextWidget extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
-  const CustomInputTextWidget({
-    Key? key,
-    required this.label,
-    required this.controller,
-    this.onChanged,
-  }) : super(key: key);
+  final double width;
+  const CustomInputTextWidget(
+      {super.key,
+      required this.label,
+      required this.controller,
+      this.onChanged,
+      this.width = 150});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class CustomInputTextWidget extends StatelessWidget {
         style: const TextStyle(fontSize: 18.0, color: Colors.black),
       ),
       SizedBox(
-        width: 150,
+        width: width,
         child: TextField(
           controller: controller,
           onChanged: onChanged,

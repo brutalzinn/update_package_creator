@@ -28,8 +28,6 @@ class _HomePageState extends State<Home> {
   String manifestFile = "";
   String baseUrl = "";
   String versionFile = "";
-  String _sourceDirectory = 'test//input';
-  String _outputDirectory = 'test//output';
   TextEditingController versionTextController = TextEditingController();
   CheckboxController isAutoIncrementController = CheckboxController();
   SystemTabsController windowsTabController = SystemTabsController();
@@ -38,7 +36,8 @@ class _HomePageState extends State<Home> {
   MetadataController windowsMetadataController = MetadataController();
   MetadataController linuxMetadataController = MetadataController();
   MetadataController macMetadataController = MetadataController();
-
+  String _sourceDirectory = "";
+  String _outputDirectory = "";
   late ConfigModel config;
 
   @override
@@ -54,24 +53,6 @@ class _HomePageState extends State<Home> {
     });
   }
 
-  void _pickSourceDirectory() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      setState(() {
-        _sourceDirectory = selectedDirectory;
-      });
-    }
-  }
-
-  void _pickOutputDirectory() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      setState(() {
-        _outputDirectory = selectedDirectory;
-      });
-    }
-  }
-
   void _openSettings() {
     Navigator.push(
       context,
@@ -80,31 +61,62 @@ class _HomePageState extends State<Home> {
   }
 
   void _openManifest() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ManifestEditor()),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => ManifestEditor()),
+    // );
   }
 
   void _generateUpdatePackage() async {
     try {
       String newVersion = versionTextController.text;
-      if (isAutoIncrementController.isChecked.value) {
-        newVersion = await Util.readAndIncrementVersion(versionFile);
+      // if (isAutoIncrementController.isChecked.value) {
+      //   newVersion = await Util.readVersion(versionFile);
+      // }
+      if (windowsTabController.isEnabled.value) {
+        _sourceDirectory = windowsTabController.inputDirectory.value;
+        _outputDirectory = windowsTabController.outputDirectory.value;
+      }
+      if (linuxTabController.isEnabled.value) {
+        _sourceDirectory = linuxTabController.inputDirectory.value;
+        _outputDirectory = linuxTabController.outputDirectory.value;
+      }
+      if (macTabController.isEnabled.value) {
+        _sourceDirectory = macTabController.inputDirectory.value;
+        _outputDirectory = macTabController.outputDirectory.value;
       }
       String outputZipFile =
           p.join(_outputDirectory, "update_package_v$newVersion.zip");
       await Util.createUpdatePackage(_sourceDirectory, outputZipFile);
-      Manifest manifest = Manifest(updates: []);
+      List<OsInfo> osInfo = [];
+
+      ///todo: add adjuement when something failes.. we need a rollback
       if (config.isSmartManifest) {
-        manifest = await Util.readManifestFile(manifestFile);
-        manifest.addUpdate(UpdateInfo(
-          os: OsInfo("win", '$baseUrl/update_package_v$newVersion.zip',
-              windowsMetadataController.metadata.value),
-          metadata: {},
-          version: newVersion,
-        ));
+        if (windowsTabController.isEnabled.value) {
+          osInfo.add(
+            OsInfo("win", '$baseUrl/update_package_v$newVersion.zip',
+                windowsMetadataController.metadata.value),
+          );
+        }
+        if (macTabController.isEnabled.value) {
+          osInfo.add(
+            OsInfo("macos", '$baseUrl/update_package_v$newVersion.zip',
+                macTabController.metadata.value),
+          );
+        }
+        if (linuxTabController.isEnabled.value) {
+          osInfo.add(
+            OsInfo("linux", '$baseUrl/update_package_v$newVersion.zip',
+                linuxTabController.metadata.value),
+          );
+        }
       }
+      final manifest = await Util.readManifestFile(manifestFile);
+      manifest.addUpdate(UpdateInfo(
+        os: osInfo,
+        metadata: {},
+        version: newVersion,
+      ));
       await Util.writeManifestFile(manifestFile, manifest);
       Dialogs.showSimpleAlert(context, "Sucess",
           message:
@@ -165,17 +177,17 @@ class _HomePageState extends State<Home> {
                 )),
               ]),
             ),
-            // const SizedBox(height: 40),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _generateUpdatePackage,
               child: const Text('Generate Update Package'),
             ),
-            // const SizedBox(height: 200),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _openManifest,
               child: const Text('Manifest editor'),
             ),
-            // const SizedBox(height: 40),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _openSettings,
               child: const Text('Settings'),
