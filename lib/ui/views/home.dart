@@ -9,6 +9,7 @@ import 'package:update_package_creator/core/models/manifest.dart';
 import 'package:update_package_creator/core/models/update_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
+import 'package:update_package_creator/ui/controllers/metadata_controller.dart';
 import 'package:update_package_creator/ui/controllers/system_tabs_controller.dart';
 import 'package:update_package_creator/ui/dialogs/dialogs.dart';
 import 'package:update_package_creator/ui/tabs/system.dart';
@@ -34,6 +35,9 @@ class _HomePageState extends State<Home> {
   SystemTabsController windowsTabController = SystemTabsController();
   SystemTabsController macTabController = SystemTabsController();
   SystemTabsController linuxTabController = SystemTabsController();
+  MetadataController windowsMetadataController = MetadataController();
+  MetadataController linuxMetadataController = MetadataController();
+  MetadataController macMetadataController = MetadataController();
 
   late ConfigModel config;
 
@@ -94,9 +98,12 @@ class _HomePageState extends State<Home> {
       Manifest manifest = Manifest(updates: []);
       if (config.isSmartManifest) {
         manifest = await Util.readManifestFile(manifestFile);
-        // manifest.addUpdate(UpdateInfo(
-        //     version: newVersion,
-        //     url: '$baseUrl/update_package_v$newVersion.zip'));
+        manifest.addUpdate(UpdateInfo(
+          os: OsInfo("win", '$baseUrl/update_package_v$newVersion.zip',
+              windowsMetadataController.metadata.value),
+          metadata: {},
+          version: newVersion,
+        ));
       }
       await Util.writeManifestFile(manifestFile, manifest);
       Dialogs.showSimpleAlert(context, "Sucess",
@@ -139,21 +146,26 @@ class _HomePageState extends State<Home> {
               ],
             ),
             SizedBox(
-              width: 300,
-              height: 700,
+              height: 350,
               child: TabBarView(children: [
                 Center(
                     child: SystemTab(
-                  controller: windowsTabController,
+                  systemTabsController: windowsTabController,
+                  metadataController: windowsMetadataController,
                 )),
                 Center(
                     child: SystemTab(
-                  controller: linuxTabController,
+                  systemTabsController: linuxTabController,
+                  metadataController: linuxMetadataController,
                 )),
-                Center(child: SystemTab(controller: macTabController)),
+                Center(
+                    child: SystemTab(
+                  systemTabsController: macTabController,
+                  metadataController: macMetadataController,
+                )),
               ]),
             ),
-            const SizedBox(height: 40),
+            // const SizedBox(height: 40),
             ElevatedButton(
               onPressed: _generateUpdatePackage,
               child: const Text('Generate Update Package'),
