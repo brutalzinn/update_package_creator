@@ -1,9 +1,8 @@
 name: Flutter CI
 
 on:
-  push:
-    branches:
-      - stable
+  release:
+    types: [created]
 
 jobs:
   build-and-release-windows:
