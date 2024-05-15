@@ -34,19 +34,25 @@ class OsInfo {
 
 class UpdateInfo {
   String version;
-  List<OsInfo> os;
-  Map<String, dynamic>? metadata;
+  OsInfo? windowsOS;
+  OsInfo? macOS;
+  OsInfo? linuxOS;
 
+  Map<String, dynamic>? metadata;
   UpdateInfo({
     required this.version,
-    required this.os,
-    required this.metadata,
+    this.windowsOS,
+    this.macOS,
+    this.linuxOS,
+    this.metadata,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'version': version,
-      'os': os.map((x) => x.toMap()).toList(),
+      'windowsOS': windowsOS?.toMap(),
+      'macOS': macOS?.toMap(),
+      'linuxOS': linuxOS?.toMap(),
       'metadata': metadata,
     };
   }
@@ -54,11 +60,15 @@ class UpdateInfo {
   factory UpdateInfo.fromMap(Map<String, dynamic> map) {
     return UpdateInfo(
       version: map['version'] as String,
-      os: List<OsInfo>.from(
-        (map['os'] as List).map<OsInfo>(
-          (x) => OsInfo.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
+      windowsOS: map['windowsOS'] != null
+          ? OsInfo.fromMap(map['windowsOS'] as Map<String, dynamic>)
+          : null,
+      macOS: map['macOS'] != null
+          ? OsInfo.fromMap(map['macOS'] as Map<String, dynamic>)
+          : null,
+      linuxOS: map['linuxOS'] != null
+          ? OsInfo.fromMap(map['linuxOS'] as Map<String, dynamic>)
+          : null,
       metadata: map['metadata'] != null
           ? Map<String, dynamic>.from(map['metadata'] as Map<String, dynamic>)
           : null,
@@ -69,4 +79,15 @@ class UpdateInfo {
 
   factory UpdateInfo.fromJson(String source) =>
       UpdateInfo.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  OsInfo getOsInfo() {
+    if (macOS != null) {
+      return macOS!;
+    }
+    if (linuxOS != null) {
+      return linuxOS!;
+    }
+
+    return windowsOS!;
+  }
 }

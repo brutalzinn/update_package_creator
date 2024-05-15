@@ -26,13 +26,14 @@ class Home extends StatefulWidget {
 
 class _HomePageState extends State<Home> {
   String manifestFile = "";
-  String baseUrl = "";
+  // String baseUrl = "";
   String versionFile = "";
   TextEditingController versionTextController = TextEditingController();
   CheckboxController isAutoIncrementController = CheckboxController();
   SystemTabsController windowsTabController = SystemTabsController();
   SystemTabsController macTabController = SystemTabsController();
   SystemTabsController linuxTabController = SystemTabsController();
+
   MetadataController windowsMetadataController = MetadataController();
   MetadataController linuxMetadataController = MetadataController();
   MetadataController macMetadataController = MetadataController();
@@ -47,9 +48,14 @@ class _HomePageState extends State<Home> {
       config = await ConfigManager.loadConfig();
       versionTextController.text = await Util.readVersion(versionFile);
       isAutoIncrementController.isChecked.value = config.isAutoIncrement;
-      baseUrl = config.url;
+
+      windowsTabController.url.value = config.windowsUrl;
+      linuxTabController.url.value = config.linuxUrl;
+      macTabController.url.value = config.macUrl;
+
       manifestFile = Util.getManifestFile(config);
       versionFile = Util.getVersionFile(config);
+      setState(() {});
     });
   }
 
@@ -61,59 +67,62 @@ class _HomePageState extends State<Home> {
   }
 
   void _openManifest() {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => ManifestEditor()),
-    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ManifestEditor()),
+    );
   }
 
   void _generateUpdatePackage() async {
     try {
       String newVersion = versionTextController.text;
+      String _baseUrl = "";
       // if (isAutoIncrementController.isChecked.value) {
       //   newVersion = await Util.readVersion(versionFile);
       // }
       if (windowsTabController.isEnabled.value) {
         _sourceDirectory = windowsTabController.inputDirectory.value;
         _outputDirectory = windowsTabController.outputDirectory.value;
+        _baseUrl = windowsTabController.url.value;
       }
       if (linuxTabController.isEnabled.value) {
         _sourceDirectory = linuxTabController.inputDirectory.value;
         _outputDirectory = linuxTabController.outputDirectory.value;
+        _baseUrl = linuxTabController.url.value;
       }
       if (macTabController.isEnabled.value) {
         _sourceDirectory = macTabController.inputDirectory.value;
         _outputDirectory = macTabController.outputDirectory.value;
+        _baseUrl = macTabController.url.value;
       }
       String outputZipFile =
           p.join(_outputDirectory, "update_package_v$newVersion.zip");
       await Util.createUpdatePackage(_sourceDirectory, outputZipFile);
-      List<OsInfo> osInfo = [];
 
-      ///todo: add adjuement when something failes.. we need a rollback
-      if (config.isSmartManifest) {
-        if (windowsTabController.isEnabled.value) {
-          osInfo.add(
-            OsInfo("win", '$baseUrl/update_package_v$newVersion.zip',
-                windowsMetadataController.metadata.value),
-          );
-        }
-        if (macTabController.isEnabled.value) {
-          osInfo.add(
-            OsInfo("macos", '$baseUrl/update_package_v$newVersion.zip',
-                macTabController.metadata.value),
-          );
-        }
-        if (linuxTabController.isEnabled.value) {
-          osInfo.add(
-            OsInfo("linux", '$baseUrl/update_package_v$newVersion.zip',
-                linuxTabController.metadata.value),
-          );
-        }
+      OsInfo? windows;
+      OsInfo? linux;
+      OsInfo? mac;
+
+      if (windowsTabController.isEnabled.value) {
+        windows = OsInfo("win", '$_baseUrl/update_package_v$newVersion.zip',
+            windowsMetadataController.metadata.value);
       }
-      final manifest = await Util.readManifestFile(manifestFile);
+      if (macTabController.isEnabled.value) {
+        mac = OsInfo("macos", '$_baseUrl/update_package_v$newVersion.zip',
+            macMetadataController.metadata.value);
+      }
+      if (linuxTabController.isEnabled.value) {
+        linux = OsInfo("linux", '$_baseUrl/update_package_v$newVersion.zip',
+            linuxMetadataController.metadata.value);
+      }
+      Manifest manifest = Manifest(updates: []);
+      if (config.isSmartManifest) {
+        manifest = await Util.readManifestFile(manifestFile);
+      }
       manifest.addUpdate(UpdateInfo(
-        os: osInfo,
+        windowsOS: windows,
+        macOS: mac,
+        linuxOS: linux,
         metadata: {},
         version: newVersion,
       ));
@@ -140,6 +149,7 @@ class _HomePageState extends State<Home> {
         child: ListView(
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomInputTextWidget(
                     label: "Version", controller: versionTextController),

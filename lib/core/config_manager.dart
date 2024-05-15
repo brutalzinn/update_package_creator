@@ -10,7 +10,9 @@ class ConfigManager {
       return ConfigModel.fromJson(contents);
     } catch (e) {
       return ConfigModel(
-        url: "http://robertocpaes.dev/test",
+        windowsUrl: "",
+        macUrl: "",
+        linuxUrl: "",
         manifestDirPath: "test\\output",
         versionDirPath: "",
         isSmartManifest: true,

@@ -40,6 +40,7 @@ class SystemTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    urlTextEditingController.text = systemTabsController.url.value;
     return SingleChildScrollView(
         child: Column(children: [
       CustomCheckBoxWidget(

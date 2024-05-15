@@ -18,7 +18,10 @@ class Config extends StatefulWidget {
 }
 
 class _ConfigPageState extends State<Config> {
-  TextEditingController urlHostTextController = TextEditingController();
+  TextEditingController windowsHostTextController = TextEditingController();
+  TextEditingController macHostTextController = TextEditingController();
+  TextEditingController linuxHostTextController = TextEditingController();
+
   TextEditingController versionTextController = TextEditingController();
   CheckboxController isAutoIncrementController = CheckboxController();
   CheckboxController isSmartManifestController = CheckboxController();
@@ -44,7 +47,9 @@ class _ConfigPageState extends State<Config> {
       isSmartManifestController.onChanged(config.isSmartManifest);
       isAutoIncrementController.onChanged(config.isAutoIncrement);
       versionTextController.text = config.versionDirPath;
-      urlHostTextController.text = config.url;
+      windowsHostTextController.text = config.windowsUrl;
+      macHostTextController.text = config.macUrl;
+      linuxHostTextController.text = config.linuxUrl;
     });
   }
 
@@ -54,18 +59,28 @@ class _ConfigPageState extends State<Config> {
       appBar: AppBar(
         title: const Text('Config'),
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           CustomInputTextWidget(
-              label: "Url host", controller: urlHostTextController),
+              width: 300,
+              label: "Windows host",
+              controller: windowsHostTextController),
+          CustomInputTextWidget(
+              width: 300, label: "Mac host", controller: macHostTextController),
+          CustomInputTextWidget(
+              width: 300,
+              label: "Linux host",
+              controller: linuxHostTextController),
           ElevatedButton(
             onPressed: _pickManifestDirectory,
             child: const Text('Select Output Manifest Directory'),
           ),
           CustomCheckBoxWidget(
               label: "Auto increment", controller: isAutoIncrementController),
+          const SizedBox(height: 10),
           CustomCheckBoxWidget(
               label: "Smart manifest", controller: isSmartManifestController),
+          const SizedBox(height: 10),
           ElevatedButton(
               onPressed: () async {
                 final config = await ConfigManager.loadConfig();
@@ -75,11 +90,14 @@ class _ConfigPageState extends State<Config> {
                     isSmartManifestController.isChecked.value;
                 config.manifestDirPath = _manifestDir;
                 config.versionDirPath = _versionDir;
-                config.url = urlHostTextController.text;
+                config.windowsUrl = windowsHostTextController.text;
+                config.linuxUrl = linuxHostTextController.text;
+                config.macUrl = macHostTextController.text;
                 await ConfigManager.saveConfig(config);
                 Navigator.of(context).pop();
               },
               child: const Text('Save')),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();

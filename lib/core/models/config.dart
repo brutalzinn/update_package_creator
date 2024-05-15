@@ -2,13 +2,18 @@ import 'dart:convert';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class ConfigModel {
-  String url;
+  String windowsUrl;
+  String macUrl;
+  String linuxUrl;
+
   String manifestDirPath;
   String versionDirPath;
   bool isAutoIncrement;
   bool isSmartManifest;
   ConfigModel({
-    required this.url,
+    this.windowsUrl = "",
+    this.macUrl = "",
+    this.linuxUrl = "",
     required this.manifestDirPath,
     required this.versionDirPath,
     required this.isAutoIncrement,
@@ -17,7 +22,9 @@ class ConfigModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'url': url,
+      'windowsUrl': windowsUrl,
+      'macUrl': macUrl,
+      'linuxUrl': linuxUrl,
       'manifestDirPath': manifestDirPath,
       'versionDirPath': versionDirPath,
       'isAutoIncrement': isAutoIncrement,
@@ -27,7 +34,9 @@ class ConfigModel {
 
   factory ConfigModel.fromMap(Map<String, dynamic> map) {
     return ConfigModel(
-      url: map['url'] as String,
+      windowsUrl: map['windowsUrl'] as String,
+      macUrl: map['macUrl'] as String,
+      linuxUrl: map['linuxUrl'] as String,
       manifestDirPath: map['manifestDirPath'] as String,
       versionDirPath: map['versionDirPath'] as String,
       isAutoIncrement: map['isAutoIncrement'] as bool,
