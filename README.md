@@ -14,6 +14,9 @@ A more "consistent version" of [flutter-manifest-creator](https://github.com/bru
 [x] Create basic manifest generator
 
 
+# Docs
+
+
 
 
 

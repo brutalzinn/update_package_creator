@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:update_package_creator/core/config_manager.dart';
-import 'package:update_package_creator/core/models/config.dart';
-import 'package:update_package_creator/core/models/manifest.dart';
-import 'package:update_package_creator/core/models/update_info.dart';
+import 'package:update_package_creator/core/modules/manifest/models/config.dart';
+import 'package:update_package_creator/core/modules/manifest/models/manifest.dart';
+import 'package:update_package_creator/core/modules/manifest/models/update_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
 import 'package:update_package_creator/ui/widgets/custom_checkbox.dart';
 import 'package:update_package_creator/ui/widgets/custom_input_text.dart';
-import 'package:update_package_creator/core/util.dart';
+import 'package:update_package_creator/core/modules/manifest/manifest_util.dart';
 
 class Config extends StatefulWidget {
   @override

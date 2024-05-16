@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:update_package_creator/core/models/config.dart';
+import 'package:update_package_creator/core/modules/manifest/models/config.dart';
 
 class ConfigManager {
   static const String configFilePath = 'config.json';

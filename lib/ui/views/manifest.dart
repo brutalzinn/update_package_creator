@@ -4,16 +4,16 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:update_package_creator/core/config_manager.dart';
-import 'package:update_package_creator/core/models/config.dart';
-import 'package:update_package_creator/core/models/manifest.dart';
-import 'package:update_package_creator/core/models/update_info.dart';
+import 'package:update_package_creator/core/modules/manifest/models/config.dart';
+import 'package:update_package_creator/core/modules/manifest/models/manifest.dart';
+import 'package:update_package_creator/core/modules/manifest/models/update_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
 import 'package:update_package_creator/ui/dialogs/dialogs.dart';
 import 'package:update_package_creator/ui/views/config.dart';
 import 'package:update_package_creator/ui/widgets/custom_checkbox.dart';
 import 'package:update_package_creator/ui/widgets/custom_input_text.dart';
-import 'package:update_package_creator/core/util.dart';
+import 'package:update_package_creator/core/modules/manifest/manifest_util.dart';
 
 class ManifestEditor extends StatefulWidget {
   @override
@@ -33,8 +33,8 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       config = await ConfigManager.loadConfig();
-      final manifestFile = Util.getManifestFile(config);
-      final manifest = await Util.readManifestFile(manifestFile);
+      final manifestFile = ManifestUtil.getManifestFile(config);
+      final manifest = await ManifestUtil.readManifestFile(manifestFile);
       updates = manifest.updates;
       refresh();
     });
@@ -52,7 +52,7 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
                   context, "Edit version",
                   initialText: item.version);
 
-              if (text == null || Util.isValidVersion(text) == false) {
+              if (text == null || ManifestUtil.isValidVersion(text) == false) {
                 await showOkAlertDialog(
                   context: context,
                   title: "Warning",
@@ -171,8 +171,8 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
               label: const Text("Version"),
               onSort: (columnIndex, ascending) {
                 if (!ascending) {
-                  updates.sort(
-                      (a, b) => Util.compareVersions(a.version, b.version));
+                  updates.sort((a, b) =>
+                      ManifestUtil.compareVersions(a.version, b.version));
                 } else {
                   updates = updates.reversed.toList();
                 }
@@ -184,9 +184,9 @@ class _ManifestEditorPageState extends State<ManifestEditor> {
           ], rows: cells),
           ElevatedButton(
               onPressed: () async {
-                final manifestFile = Util.getManifestFile(config);
+                final manifestFile = ManifestUtil.getManifestFile(config);
                 final manifest = Manifest(updates: updates);
-                await Util.writeManifestFile(manifestFile, manifest);
+                await ManifestUtil.writeManifestFile(manifestFile, manifest);
                 Navigator.of(context).pop();
               },
               child: const Text('Save')),

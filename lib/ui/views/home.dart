@@ -4,9 +4,9 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:update_package_creator/core/config_manager.dart';
-import 'package:update_package_creator/core/models/config.dart';
-import 'package:update_package_creator/core/models/manifest.dart';
-import 'package:update_package_creator/core/models/update_info.dart';
+import 'package:update_package_creator/core/modules/manifest/models/config.dart';
+import 'package:update_package_creator/core/modules/manifest/models/manifest.dart';
+import 'package:update_package_creator/core/modules/manifest/models/update_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/ui/controllers/checkbox_controller.dart';
 import 'package:update_package_creator/ui/controllers/metadata_controller.dart';
@@ -17,7 +17,7 @@ import 'package:update_package_creator/ui/views/config.dart';
 import 'package:update_package_creator/ui/views/manifest.dart';
 import 'package:update_package_creator/ui/widgets/custom_checkbox.dart';
 import 'package:update_package_creator/ui/widgets/custom_input_text.dart';
-import 'package:update_package_creator/core/util.dart';
+import 'package:update_package_creator/core/modules/manifest/manifest_util.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -46,15 +46,15 @@ class _HomePageState extends State<Home> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       config = await ConfigManager.loadConfig();
-      versionTextController.text = await Util.readVersion(versionFile);
+      versionTextController.text = await ManifestUtil.readVersion(versionFile);
       isAutoIncrementController.isChecked.value = config.isAutoIncrement;
 
       windowsTabController.url.value = config.windowsUrl;
       linuxTabController.url.value = config.linuxUrl;
       macTabController.url.value = config.macUrl;
 
-      manifestFile = Util.getManifestFile(config);
-      versionFile = Util.getVersionFile(config);
+      manifestFile = ManifestUtil.getManifestFile(config);
+      versionFile = ManifestUtil.getVersionFile(config);
       setState(() {});
     });
   }
@@ -97,7 +97,7 @@ class _HomePageState extends State<Home> {
       }
       String outputZipFile =
           p.join(_outputDirectory, "update_package_v$newVersion.zip");
-      await Util.createUpdatePackage(_sourceDirectory, outputZipFile);
+      await ManifestUtil.createUpdatePackage(_sourceDirectory, outputZipFile);
 
       OsInfo? windows;
       OsInfo? linux;
@@ -117,7 +117,7 @@ class _HomePageState extends State<Home> {
       }
       Manifest manifest = Manifest(updates: []);
       if (config.isSmartManifest) {
-        manifest = await Util.readManifestFile(manifestFile);
+        manifest = await ManifestUtil.readManifestFile(manifestFile);
       }
       manifest.addUpdate(UpdateInfo(
         windowsOS: windows,
@@ -126,7 +126,7 @@ class _HomePageState extends State<Home> {
         metadata: {},
         version: newVersion,
       ));
-      await Util.writeManifestFile(manifestFile, manifest);
+      await ManifestUtil.writeManifestFile(manifestFile, manifest);
       Dialogs.showSimpleAlert(context, "Sucess",
           message:
               " 'Update package would be generated from:\n$_sourceDirectory\nto:\n$_outputDirectory'");
@@ -161,10 +161,10 @@ class _HomePageState extends State<Home> {
             const TabBar(
               tabs: [
                 Tab(icon: Icon(Icons.window), child: Text("Windows")),
-                Tab(icon: Icon(Icons.apple), child: Text("Mac OS")),
                 Tab(
                     icon: Icon(Icons.admin_panel_settings_outlined),
                     child: Text("Linux")),
+                Tab(icon: Icon(Icons.apple), child: Text("Mac OS"))
               ],
             ),
             SizedBox(

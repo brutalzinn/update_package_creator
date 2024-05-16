@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as p;
 import 'package:update_package_creator/core/constants.dart';
-import 'package:update_package_creator/core/models/config.dart';
-import 'package:update_package_creator/core/models/manifest.dart';
+import 'package:update_package_creator/core/modules/manifest/models/config.dart';
+import 'package:update_package_creator/core/modules/manifest/models/manifest.dart';
 
-class Util {
+class ManifestUtil {
   static String getManifestFile(ConfigModel config) {
     final manifestFile =
         p.join(config.manifestDirPath, Constants.manifestFilename);

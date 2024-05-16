@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:update_package_creator/core/modules/translation/translation.dart';
 import 'package:update_package_creator/ui/views/home.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-
+  await Translation.init("translations");
   WindowOptions windowOptions = const WindowOptions(
     size: Size(900, 700),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.hidden,
-    windowButtonVisibility: false,
+    windowButtonVisibility: true,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
